@@ -1,11 +1,21 @@
 #!/bin/bash
 
+# Numéro de série du port série cible (ajustez cette valeur)
+TARGET_SERIAL_NUMBER="29525308F3"  # Remplacez par le numéro de série réel de votre port série
+
+# Trouver le port série correspondant au numéro de série
+SERIAL_PORT=$(ls -l /dev/serial/by-id | grep "$TARGET_SERIAL_NUMBER" | awk '{print $NF}' | sed 's|../../||')
+
+if [ -z "$SERIAL_PORT" ]; then
+    echo "Erreur : Aucun port série trouvé avec le numéro de série $TARGET_SERIAL_NUMBER"
+    exit 1
+fi
+
 # Configuration du port série
-SERIAL_PORT=${1:-"/dev/ttyUSB2"}  # Port série utilisé, valeur par défaut : /dev/ttyUSB0
-BAUD_RATE=${2:-115200}           # Vitesse de communication, valeur par défaut : 115200
+BAUD_RATE=${1:-115200}           # Vitesse de communication, valeur par défaut : 115200
 
 # Initialiser le port série
-stty -F "$SERIAL_PORT" "$BAUD_RATE" cs8 -cstopb -parenb
+stty -F "/dev/$SERIAL_PORT" "$BAUD_RATE" cs8 -cstopb -parenb
 
 # Fonction pour envoyer une commande LED
 send_led_command() {
@@ -20,25 +30,26 @@ send_led_command() {
     local command="${num_leds},${band_num},${led_index},${red},${green},${blue}\n"
 
     # Envoyer la commande sur le port série
-    echo -ne "$command" > "$SERIAL_PORT"
+    echo -ne "$command" > "/dev/$SERIAL_PORT"
     echo "Commande envoyée : $command"
 }
 
 # Vérifier que suffisamment d'arguments sont passés
 if [ "$#" -lt 6 ]; then
-    echo "Usage: $0 <serial_port> <baud_rate> <num_leds> <band_num> <led_index> <red> <green> <blue>"
-    echo "Exemple : $0 /dev/ttyUSB0 115200 10 0 3 255 0 0"
-    echo "Exemple : $0 /dev/ttyUSB0 115200 30 2025 0 0 0 0  -> erase all band"
+    echo "Usage: $0 <baud_rate> <num_leds> <band_num> <led_index> <red> <green> <blue>"
+    echo "Exemple : $0 115200 10 0 3 255 0 0"
+    echo "Exemple : $0 115200 30 2025 0 0 0 0  -> erase all band"
     exit 1
 fi
 
 # Récupérer les arguments pour la commande LED
-NUM_LEDS=$3
-BAND_NUM=$4
-LED_INDEX=$5
-RED=$6
-GREEN=$7
-BLUE=$8
+BAUD_RATE=$1
+NUM_LEDS=$2
+BAND_NUM=$3
+LED_INDEX=$4
+RED=$5
+GREEN=$6
+BLUE=$7
 
 # Envoyer la commande
 send_led_command "$NUM_LEDS" "$BAND_NUM" "$LED_INDEX" "$RED" "$GREEN" "$BLUE"

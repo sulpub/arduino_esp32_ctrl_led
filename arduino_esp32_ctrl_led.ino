@@ -1,5 +1,19 @@
 #include <Adafruit_NeoPixel.h>
 
+/*
+PINOUT ATOM M5STACK
+                    WIFI
+              ________________
+         3V3 |                |
+  BAND1  G22 |                |G21 BAND3
+  BAND0  G19 |    BOTTOM      |G25
+  BAND2  G23 |                |5V
+         G33 |________________|GND
+               GND 5V G26 G32
+
+*/
+
+
 // Paramètres de la bande LED
 #define LED_PIN_HR 26  // 26:con proche USB 19:norm Pin de données pour les LEDs  BAND 0
 #define LED_PIN_LL 22  // Pin de données pour les LEDs BAND 1
