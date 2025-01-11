@@ -5,7 +5,7 @@
 Send these command :
 
 ```
-python script_python_ctrl_led.py /dev/ttyUSB1 115200 10 3 255 255 255
+python script_python_ctrl_led.py /dev/ttyUSB1 115200 10 0 3 255 255 255
 ```
 
 The pyserial library will be installed : ***pip install pyserial***
@@ -21,7 +21,8 @@ The parameters are :
  - Serial link
  - baudrate=115200
  - number of led on the strip
- - led number for control
+ - number of the band strip led
+ - led index for control
  - Red level 0 to 255
  - Green level 0 to 255
  - Bleu level 0 to 255
