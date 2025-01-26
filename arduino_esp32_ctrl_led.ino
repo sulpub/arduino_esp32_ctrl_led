@@ -23,12 +23,13 @@ PINOUT ATOM M5STACK
 #define MAX_LEDS 30  // Nombre maximum de LEDs prises en charge
 #define NB_BAND 4    // Nombre de bande de led
 
-Adafruit_NeoPixel strip1(MAX_LEDS, LED_PIN_HR, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip2(MAX_LEDS, LED_PIN_LL, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip3(MAX_LEDS, LED_PIN_LR, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip4(MAX_LEDS, LED_PIN_UV, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip1(MAX_LEDS, LED_PIN_HR, NEO_RGBW + NEO_KHZ800);
+Adafruit_NeoPixel strip2(MAX_LEDS, LED_PIN_LL, NEO_RGBW + NEO_KHZ800);
+Adafruit_NeoPixel strip3(MAX_LEDS, LED_PIN_LR, NEO_RGBW + NEO_KHZ800);
+Adafruit_NeoPixel strip4(MAX_LEDS, LED_PIN_UV, NEO_RGB + NEO_KHZ800);
 
 int i = 0;
+int typeLed = 0;  //0:RGBW  1:RGB
 
 void all_black(void);
 
@@ -53,6 +54,7 @@ void loop() {
     String input = Serial.readStringUntil('\n');  // Lire jusqu'à la fin de ligne
     processInput(input);
   }
+  delay(1);
 }
 
 void processInput(String input) {
@@ -63,9 +65,11 @@ void processInput(String input) {
   int secondComma = input.indexOf(',', firstComma + 1);
   int thirdComma = input.indexOf(',', secondComma + 1);
   int fourthComma = input.indexOf(',', thirdComma + 1);
-  int fiveComma = input.indexOf(',', fourthComma + 1);
+  int fifthComma = input.indexOf(',', fourthComma + 1);
+  int sixthComma = input.indexOf(',', fifthComma + 1);
 
-  if (firstComma < 0 || secondComma < 0 || thirdComma < 0 || fourthComma < 0 || fiveComma < 0) {
+
+  if (firstComma < 0 || secondComma < 0 || thirdComma < 0 || fourthComma < 0 || fifthComma < 0 || sixthComma < 0) {
     Serial.println("Erreur: format incorrect");
     return;
   }
@@ -75,8 +79,9 @@ void processInput(String input) {
   int nbBands = input.substring(firstComma + 1, secondComma).toInt();
   int ledIndex = input.substring(secondComma + 1, thirdComma).toInt();
   int red = input.substring(thirdComma + 1, fourthComma).toInt();
-  int green = input.substring(fourthComma + 1, fiveComma).toInt();
-  int blue = input.substring(fiveComma + 1).toInt();
+  int green = input.substring(fourthComma + 1, fifthComma).toInt();
+  int blue = input.substring(fifthComma + 1, sixthComma).toInt();
+  int white = input.substring(sixthComma + 1).toInt();
 
   // Vérifications de validité
   if (numLEDs > MAX_LEDS || numLEDs <= 0) {
@@ -101,38 +106,45 @@ void processInput(String input) {
     return;
   }
 
-  if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
+  if (white >= 256) {
+    typeLed = 1;  //0:RGBW  1:RGB
+    white = 255;
+  }
+
+
+  if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255 || white < 0 || white > 255) {
     Serial.println("Erreur: valeur de couleur invalide");
     return;
   }
 
+
   if (nbBands == 0) {
     // Configurer la couleur de la LED spécifiée
-    strip1.setPixelColor(ledIndex, strip1.Color(red, green, blue));
+    strip1.setPixelColor(ledIndex, strip1.Color(green, red, blue, white));
     strip1.show();
     // Retourner un accusé de réception
-    Serial.println("OK: LED mise à jour BAND 1");
+    Serial.println("OK: LED mise à jour BAND 1 - RGBW");
   }
   if (nbBands == 1) {
     // Configurer la couleur de la LED spécifiée
-    strip2.setPixelColor(ledIndex, strip2.Color(red, green, blue));
+    strip2.setPixelColor(ledIndex, strip2.Color(green, red, blue, white));
     strip2.show();
     // Retourner un accusé de réception
-    Serial.println("OK: LED mise à jour BAND 1");
+    Serial.println("OK: LED mise à jour BAND 2 - RGBW");
   }
   if (nbBands == 2) {
     // Configurer la couleur de la LED spécifiée
-    strip3.setPixelColor(ledIndex, strip3.Color(red, green, blue));
+    strip3.setPixelColor(ledIndex, strip3.Color(green, red, blue, white));
     strip3.show();
     // Retourner un accusé de réception
-    Serial.println("OK: LED mise à jour BAND 1");
+    Serial.println("OK: LED mise à jour BAND 3 - RGBW");
   }
   if (nbBands == 3) {
     // Configurer la couleur de la LED spécifiée
     strip4.setPixelColor(ledIndex, strip4.Color(red, green, blue));
     strip4.show();
     // Retourner un accusé de réception
-    Serial.println("OK: LED mise à jour BAND 1");
+    Serial.println("OK: LED mise à jour BAND 4 - RGB");
   }
   delay(10);
 }
@@ -143,19 +155,19 @@ void all_black(void) {
 
   //effacer les bands
   for (i = 0; i < MAX_LEDS; i++) {
-    strip1.setPixelColor(i, strip1.Color(0, 0, 0));
+    strip1.setPixelColor(i, strip1.Color(0, 0, 0, 0));
   }
   strip1.show();
   delay(10);
 
   for (i = 0; i < MAX_LEDS; i++) {
-    strip2.setPixelColor(i, strip1.Color(0, 0, 0));
+    strip2.setPixelColor(i, strip1.Color(0, 0, 0, 0));
   }
   strip2.show();
   delay(10);
 
   for (i = 0; i < MAX_LEDS; i++) {
-    strip3.setPixelColor(i, strip1.Color(0, 0, 0));
+    strip3.setPixelColor(i, strip1.Color(0, 0, 0, 0));
   }
   strip3.show();
   delay(10);
