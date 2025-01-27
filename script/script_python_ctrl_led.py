@@ -20,7 +20,7 @@ def find_serial_port(target_serial_number):
             return os.path.realpath(port)  # Obtenir le chemin réel (/dev/ttyUSBx)
     return None
 
-def main(target_serial_number, baud_rate, num_leds, band_num, led_index, red, green, blue):
+def main(target_serial_number, baud_rate, num_leds, band_num, led_index, red, green, blue, white):
     # Recherche du port série basé sur le numéro de série
     serial_port = find_serial_port(target_serial_number)
     if not serial_port:
@@ -35,7 +35,7 @@ def main(target_serial_number, baud_rate, num_leds, band_num, led_index, red, gr
         print(f"Erreur d'ouverture du port série : {e}")
         return
 
-    def send_led_command(num_leds, band_num, led_index, red, green, blue):
+    def send_led_command(num_leds, band_num, led_index, red, green, blue, white):
         """
         Envoie une commande de contrôle LED sur le port série.
 
@@ -46,10 +46,11 @@ def main(target_serial_number, baud_rate, num_leds, band_num, led_index, red, gr
             red (int): Niveau de rouge (0-255).
             green (int): Niveau de vert (0-255).
             blue (int): Niveau de bleu (0-255).
+            white (int): Niveau de blanc (0-255).
         """
         if ser and ser.is_open:
             # Création de la commande
-            command = f"{num_leds},{band_num},{led_index},{red},{green},{blue}\n"
+            command = f"{num_leds},{band_num},{led_index},{red},{green},{blue},{white}\n"
             ser.write(command.encode())  # Envoi de la commande
             print(f"Commande envoyée : {command.strip()}")
             time.sleep(0.01)  # Pause de 10 millisecondes
@@ -57,7 +58,7 @@ def main(target_serial_number, baud_rate, num_leds, band_num, led_index, red, gr
             print("Erreur : Port série non ouvert.")
 
     # Envoi de la commande
-    send_led_command(num_leds, band_num, led_index, red, green, blue)
+    send_led_command(num_leds, band_num, led_index, red, green, blue, white)
 
     # Fermeture de la connexion série
     ser.close()
@@ -74,10 +75,11 @@ if __name__ == "__main__":
     parser.add_argument("red", type=int, help="Niveau de rouge (0-255)")
     parser.add_argument("green", type=int, help="Niveau de vert (0-255)")
     parser.add_argument("blue", type=int, help="Niveau de bleu (0-255)")
+    parser.add_argument("white", type=int, help="Niveau de blanc (0-255)")
 
     # Récupération des arguments
     args = parser.parse_args()
-    main(args.target_serial_number, args.baud_rate, args.num_leds, args.band_num, args.led_index, args.red, args.green, args.blue)
+    main(args.target_serial_number, args.baud_rate, args.num_leds, args.band_num, args.led_index, args.red, args.green, args.blue, args.white)
 
-#Example turn one led ON: python script_python_ctrl_led.py "29525308F3" 115200 10 0 3 255 0 0
-#Example turn all OFF : python script_python_ctrl_led.py "29525308F3" 115200 10 2025 3 255 0 0
+#Example turn one led ON: python script_python_ctrl_led.py "29525308F3" 115200 10 0 3 255 0 0 0
+#Example turn all OFF : python script_python_ctrl_led.py "29525308F3" 115200 10 2025 3 255 0 0 0

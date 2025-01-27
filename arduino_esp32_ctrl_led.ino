@@ -20,7 +20,7 @@ PINOUT ATOM M5STACK
 #define LED_PIN_LR 23  // Pin de données pour les LEDs BAND 2
 #define LED_PIN_UV 21  // Pin de données pour les LEDs BAND 3
 
-#define MAX_LEDS 30  // Nombre maximum de LEDs prises en charge
+#define MAX_LEDS 200  // Nombre maximum de LEDs prises en charge
 #define NB_BAND 4    // Nombre de bande de led
 
 Adafruit_NeoPixel strip1(MAX_LEDS, LED_PIN_HR, NEO_RGBW + NEO_KHZ800);

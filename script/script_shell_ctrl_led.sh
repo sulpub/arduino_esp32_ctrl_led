@@ -25,9 +25,10 @@ send_led_command() {
     local red=$4
     local green=$5
     local blue=$6
+    local white=$7
 
     # Construire la commande au format attendu
-    local command="${num_leds},${band_num},${led_index},${red},${green},${blue}\n"
+    local command="${num_leds},${band_num},${led_index},${red},${green},${blue},${white}\n"
 
     # Envoyer la commande sur le port série
     echo -ne "$command" > "/dev/$SERIAL_PORT"
@@ -36,9 +37,9 @@ send_led_command() {
 
 # Vérifier que suffisamment d'arguments sont passés
 if [ "$#" -lt 6 ]; then
-    echo "Usage: $0 <baud_rate> <num_leds> <band_num> <led_index> <red> <green> <blue>"
-    echo "Exemple : $0 115200 10 0 3 255 0 0"
-    echo "Exemple : $0 115200 30 2025 0 0 0 0  -> erase all band"
+    echo "Usage: $0 <baud_rate> <num_leds> <band_num> <led_index> <red> <green> <blue> <white>"
+    echo "Exemple : $0 115200 10 0 3 255 0 0 0"
+    echo "Exemple : $0 115200 30 2025 0 0 0 0 0  -> erase all band"
     exit 1
 fi
 
@@ -50,6 +51,7 @@ LED_INDEX=$4
 RED=$5
 GREEN=$6
 BLUE=$7
+WHITE=$8
 
 # Envoyer la commande
-send_led_command "$NUM_LEDS" "$BAND_NUM" "$LED_INDEX" "$RED" "$GREEN" "$BLUE"
+send_led_command "$NUM_LEDS" "$BAND_NUM" "$LED_INDEX" "$RED" "$GREEN" "$BLUE" "$WHITE"
