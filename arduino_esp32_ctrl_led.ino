@@ -1,6 +1,9 @@
 #include <Adafruit_NeoPixel.h>
 
 /*
+Liste de librairie : 
+  - Adafruit NeoPixel at version 1.11.0 : Adafruit_NeoPixel by Adafruit
+
 PINOUT ATOM M5STACK
                     WIFI
               ________________
@@ -10,6 +13,24 @@ PINOUT ATOM M5STACK
   BAND2  G23 |                |5V
          G33 |________________|GND
                GND 5V G26 G32
+
+Configuration UART : 115200 8 N 1
+Commande UART : nombre_led,numero_bande,numero_led,niveau_rouge,niveau_vert_niveau_bleu,niveau_blanc
+nombre led : 200
+niveau led : 0 à 255 (0:led eteinte et 255:led au max)
+numéro bande : 0 - led du haut
+               1 - led bas droite
+               2 - led bas gauche
+               3 - led UV
+
+exemple : 
+ - 200,0,6,10,0,0,0 -> bande 0 , led 6 avec niveau rouge = 10 
+ - 200,0,16,0,0,0,50 -> bande 0 , led 16 avec niveau blanc = 50
+
+Commande spécial numéro bande = 2025 -> efface toute les leds
+exemple : 200,2025,0,0,0,0,0
+
+Note : la bande 3 est RGB, la valeur blanche n'est pas pris en compte
 
 */
 
@@ -150,7 +171,10 @@ void processInput(String input) {
 }
 
 
-
+/*
+Si commande : 200,2025,6,0,0,0,10
+numéro band = 2025 -> efface toutel les bandes
+*/
 void all_black(void) {
 
   //effacer les bands
