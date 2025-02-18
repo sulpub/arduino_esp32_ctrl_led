@@ -36,13 +36,15 @@ Note : la bande 3 est RGB, la valeur blanche n'est pas pris en compte
 
 
 // Paramètres de la bande LED
-#define LED_PIN_HR 26  // 26:con proche USB 19:norm Pin de données pour les LEDs  BAND 0
+#define LED_PIN_HR 19  // 26:con proche USB 19:norm Pin de données pour les LEDs  BAND 0
 #define LED_PIN_LL 22  // Pin de données pour les LEDs BAND 1
 #define LED_PIN_LR 23  // Pin de données pour les LEDs BAND 2
 #define LED_PIN_UV 21  // Pin de données pour les LEDs BAND 3
 
+#define LED_PIN_PWR_UV 33  // Pin de données pour les LEDs BAND 3
+
 #define MAX_LEDS 200  // Nombre maximum de LEDs prises en charge
-#define NB_BAND 4    // Nombre de bande de led
+#define NB_BAND 4     // Nombre de bande de led
 
 Adafruit_NeoPixel strip1(MAX_LEDS, LED_PIN_HR, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel strip2(MAX_LEDS, LED_PIN_LL, NEO_RGBW + NEO_KHZ800);
@@ -56,14 +58,19 @@ void all_black(void);
 
 void setup() {
   Serial.begin(115200);  // Initialiser la communication série
-  strip1.begin();        // Initialiser la bande LED
-  strip1.show();         // Éteindre toutes les LEDs au démarrage
-  strip2.begin();        // Initialiser la bande LED
-  strip2.show();         // Éteindre toutes les LEDs au démarrage
-  strip3.begin();        // Initialiser la bande LED
-  strip3.show();         // Éteindre toutes les LEDs au démarrage
-  strip4.begin();        // Initialiser la bande LED
-  strip4.show();         // Éteindre toutes les LEDs au démarrage
+
+  //pin power band UV
+  pinMode(LED_PIN_PWR_UV, OUTPUT);
+  digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER OFF LED UV
+
+  strip1.begin();  // Initialiser la bande LED
+  strip1.show();   // Éteindre toutes les LEDs au démarrage
+  strip2.begin();  // Initialiser la bande LED
+  strip2.show();   // Éteindre toutes les LEDs au démarrage
+  strip3.begin();  // Initialiser la bande LED
+  strip3.show();   // Éteindre toutes les LEDs au démarrage
+  strip4.begin();  // Initialiser la bande LED
+  strip4.show();   // Éteindre toutes les LEDs au démarrage
 
   //eteindre toutes les leds
   all_black();
@@ -166,6 +173,17 @@ void processInput(String input) {
     strip4.show();
     // Retourner un accusé de réception
     Serial.println("OK: LED mise à jour BAND 4 - RGB");
+
+    if (red == 0 and green == 0 and blue == 0) {
+      //power off led uv
+      Serial.println("PWER OFF LED UV");
+      digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER OFF LED UV
+
+    } else {
+      //power on led uv
+      Serial.println("PWER LED UV");
+      digitalWrite(LED_PIN_PWR_UV, LOW);  // POWER ON LED UV
+    }
   }
   delay(10);
 }
@@ -201,4 +219,7 @@ void all_black(void) {
   }
   strip4.show();
   delay(10);
+
+  //power off led uv
+  digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER OFF LED UV
 }
