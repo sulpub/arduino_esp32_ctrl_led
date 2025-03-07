@@ -15,8 +15,8 @@ PINOUT ATOM M5STACK
                GND 5V G26 G32
 
 Configuration UART : 115200 8 N 1
-Commande UART : nombre_led,numero_bande,numero_led,niveau_rouge,niveau_vert_niveau_bleu,niveau_blanc
-nombre led : 200
+Commande UART 1 : nombre_led,numero_bande,numero_led,niveau_rouge,niveau_vert_niveau_bleu,niveau_blanc
+nombre led SK6812 RGBW : 200
 niveau led : 0 à 255 (0:led eteinte et 255:led au max)
 numéro bande : 0 - led du haut
                1 - led bas droite
@@ -31,6 +31,11 @@ Commande spécial numéro bande = 2025 -> efface toute les leds
 exemple : 200,2025,0,0,0,0,0
 
 Note : la bande 3 est RGB, la valeur blanche n'est pas pris en compte
+
+Commande UART 2 : mode eclairage
+2025,mode :
+mode de 1 à 10
+mode 0 erase all
 
 */
 
@@ -53,8 +58,13 @@ Adafruit_NeoPixel strip4(MAX_LEDS, LED_PIN_UV, NEO_RGB + NEO_KHZ800);
 
 int i = 0;
 int typeLed = 0;  //0:RGBW  1:RGB
+int mode = 0;     //led mode
+int passmode = 2025;
+int passaccess = 0;
+int update = 0;
 
 void all_black(void);
+void changemode(void);
 
 void setup() {
   Serial.begin(115200);  // Initialiser la communication série
@@ -82,7 +92,92 @@ void loop() {
     String input = Serial.readStringUntil('\n');  // Lire jusqu'à la fin de ligne
     processInput(input);
   }
+
+  changemode();
+
   delay(1);
+}
+
+void changemode(void) {
+  if (update == 1) {
+    update = 0;
+    switch (mode) {
+      case 1:
+        // mode 1
+        Serial.println("MODE 1");
+        strip1.setPixelColor(4, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(5, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(6, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(8, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(15, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(16, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(18, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(21, strip1.Color(0, 0, 50, 0));
+        strip1.show();
+
+        strip2.setPixelColor(3, strip1.Color(0, 0, 0, 5));
+        strip2.setPixelColor(5, strip1.Color(0, 0, 0, 5));
+        strip2.setPixelColor(6, strip1.Color(0, 0, 0, 5));
+        strip2.show();
+
+        strip3.setPixelColor(3, strip1.Color(0, 0, 0, 5));
+        strip3.setPixelColor(5, strip1.Color(0, 0, 0, 5));
+        strip3.setPixelColor(6, strip1.Color(0, 0, 0, 5));
+        strip3.show();
+
+        break;
+      case 2:
+        // mode 2
+        Serial.println("MODE 2");
+        strip1.setPixelColor(4, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(5, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(6, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(8, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(15, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(16, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(18, strip1.Color(50, 0, 0, 0));
+        strip1.setPixelColor(21, strip1.Color(0, 0, 50, 0));
+        strip1.show();
+
+        strip2.setPixelColor(3, strip1.Color(1, 0, 0, 0));
+        strip2.setPixelColor(5, strip1.Color(1, 0, 0, 0));
+        strip2.setPixelColor(6, strip1.Color(1, 0, 0, 0));
+        strip2.show();
+
+        strip3.setPixelColor(3, strip1.Color(1, 0, 0, 0));
+        strip3.setPixelColor(5, strip1.Color(1, 0, 0, 0));
+        strip3.setPixelColor(6, strip1.Color(1, 0, 0, 0));
+        strip3.show();
+        break;
+      case 3:
+        // mode 3
+        Serial.println("MODE 3");
+        strip1.setPixelColor(4, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(5, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(6, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(8, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(15, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(16, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(18, strip1.Color(0, 90, 0, 0));
+        strip1.setPixelColor(21, strip1.Color(0, 0, 50, 0));
+        strip1.show();
+
+        strip2.setPixelColor(3, strip1.Color(0, 10, 0, 0));
+        strip2.setPixelColor(5, strip1.Color(0, 10, 0, 0));
+        strip2.setPixelColor(6, strip1.Color(0, 10, 0, 0));
+        strip2.show();
+
+        strip3.setPixelColor(3, strip1.Color(0, 10, 0, 0));
+        strip3.setPixelColor(5, strip1.Color(0, 10, 0, 0));
+        strip3.setPixelColor(6, strip1.Color(0, 10, 0, 0));
+        strip3.show();
+        break;        
+      default:
+        //eteindre toutes les leds
+        all_black();
+        break;
+    }
+  }
 }
 
 void processInput(String input) {
@@ -98,7 +193,15 @@ void processInput(String input) {
 
 
   if (firstComma < 0 || secondComma < 0 || thirdComma < 0 || fourthComma < 0 || fifthComma < 0 || sixthComma < 0) {
-    Serial.println("Erreur: format incorrect");
+
+    passaccess = input.substring(0, firstComma).toInt();
+    if (passaccess == passmode) {
+      update = 1;
+      mode = input.substring(firstComma + 1, secondComma).toInt();
+    } else {
+      Serial.println("Erreur: format incorrect");
+    }
+
     return;
   }
 
