@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Numéro de série du port série cible (ajustez cette valeur)
-TARGET_SERIAL_NUMBER="29525308F3"  # Remplacez par le numéro de série réel de votre port série
+# commande shell find id : ls -l /dev/serial/by-id/
+TARGET_SERIAL_NUMBER="6D52D82916"  # Remplacez par le numéro de série réel de votre port série
 
 # Trouver le port série correspondant au numéro de série
 SERIAL_PORT=$(ls -l /dev/serial/by-id | grep "$TARGET_SERIAL_NUMBER" | awk '{print $NF}' | sed 's|../../||')
