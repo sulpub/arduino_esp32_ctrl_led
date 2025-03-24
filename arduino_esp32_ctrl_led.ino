@@ -51,27 +51,36 @@ mode 0 erase all
 #define MAX_LEDS 200  // Nombre maximum de LEDs prises en charge
 #define NB_BAND 4     // Nombre de bande de led
 
+#define PERIOD_CHANGE 1000  //ms
+
 Adafruit_NeoPixel strip1(MAX_LEDS, LED_PIN_HR, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel strip2(MAX_LEDS, LED_PIN_LL, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel strip3(MAX_LEDS, LED_PIN_LR, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel strip4(MAX_LEDS, LED_PIN_UV, NEO_RGB + NEO_KHZ800);
 
 int i = 0;
+int k = 0;
 int typeLed = 0;  //0:RGBW  1:RGB
 int mode = 0;     //led mode
 int passmode = 2025;
 int passaccess = 0;
 int update = 0;
 
+//time variables
+unsigned long nowTimeMillis = 0;  //PERIOD_CHANGE
+unsigned long updateAnim = 0;
+
 void all_black(void);
+void all_black_init_led(void);
 void changemode(void);
+void processInput(String input);
 
 void setup() {
   Serial.begin(115200);  // Initialiser la communication série
 
   //pin power band UV
   pinMode(LED_PIN_PWR_UV, OUTPUT);
-  digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER OFF LED UV
+  digitalWrite(LED_PIN_PWR_UV, LOW);  // POWER OFF LED UV
 
   strip1.begin();  // Initialiser la bande LED
   strip1.show();   // Éteindre toutes les LEDs au démarrage
@@ -83,11 +92,14 @@ void setup() {
   strip4.show();   // Éteindre toutes les LEDs au démarrage
 
   //eteindre toutes les leds
-  all_black();
+  //all_black();
 }
 
 
 void loop() {
+
+  nowTimeMillis = millis();
+
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');  // Lire jusqu'à la fin de ligne
     processInput(input);
@@ -99,11 +111,19 @@ void loop() {
 }
 
 void changemode(void) {
-  if (update == 1) {
-    update = 0;
-    switch (mode) {
-      case 1:
-        // mode 1
+
+  switch (mode) {
+    case 0:
+      // mode 1
+      if (update == 1) {
+        update = 0;
+      }
+      break;
+    case 1:
+      // mode 1
+      if (update == 1) {
+        update = 0;
+        all_black_init_led();
         Serial.println("MODE 1");
         strip1.setPixelColor(4, strip1.Color(0, 0, 0, 50));
         strip1.setPixelColor(5, strip1.Color(0, 0, 0, 50));
@@ -124,11 +144,35 @@ void changemode(void) {
         strip3.setPixelColor(5, strip1.Color(0, 0, 0, 5));
         strip3.setPixelColor(6, strip1.Color(0, 0, 0, 5));
         strip3.show();
-
-        break;
-      case 2:
-        // mode 2
+      }
+      break;
+    case 2:
+      // mode 1
+      if (update == 1) {
+        update = 0;
+        all_black_init_led();
         Serial.println("MODE 2");
+        strip1.setPixelColor(4, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(5, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(6, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(8, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(15, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(16, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(18, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(21, strip1.Color(0, 0, 50, 0));
+        strip1.show();
+
+        strip2.show();
+
+        strip3.show();
+      }
+      break;      
+    case 3:
+      // mode 2
+      if (update == 1) {
+        update = 0;
+        all_black_init_led();
+        Serial.println("MODE 3");
         strip1.setPixelColor(4, strip1.Color(50, 0, 0, 0));
         strip1.setPixelColor(5, strip1.Color(50, 0, 0, 0));
         strip1.setPixelColor(6, strip1.Color(50, 0, 0, 0));
@@ -148,10 +192,14 @@ void changemode(void) {
         strip3.setPixelColor(5, strip1.Color(1, 0, 0, 0));
         strip3.setPixelColor(6, strip1.Color(1, 0, 0, 0));
         strip3.show();
-        break;
-      case 3:
-        // mode 3
-        Serial.println("MODE 3");
+      }
+      break;
+    case 4:
+      // mode 3
+      if (update == 1) {
+        update = 0;
+        all_black_init_led();
+        Serial.println("MODE 4");
         strip1.setPixelColor(4, strip1.Color(0, 90, 0, 0));
         strip1.setPixelColor(5, strip1.Color(0, 90, 0, 0));
         strip1.setPixelColor(6, strip1.Color(0, 90, 0, 0));
@@ -171,14 +219,53 @@ void changemode(void) {
         strip3.setPixelColor(5, strip1.Color(0, 10, 0, 0));
         strip3.setPixelColor(6, strip1.Color(0, 10, 0, 0));
         strip3.show();
-        break;        
-      default:
-        //eteindre toutes les leds
+      }
+      break;
+    case 5:
+      // mode 4 animation
+      if (update == 1) {
+        update = 0;
+        Serial.println("MODE 5");
+      }
+
+      if (millis() > updateAnim) {
+        updateAnim = millis() + PERIOD_CHANGE;
+        k++;
+        for (i = 0; i < MAX_LEDS; i++) {
+          strip1.setPixelColor(i, strip1.Color(0, 0, 0, 0));
+        }
+        strip1.setPixelColor((k + 4) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor((k + 5) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor((k + 6) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor((k + 8) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor((k + 15) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor((k + 16) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor((k + 18) % 20, strip1.Color(0, 0, 0, 50));
+        strip1.setPixelColor(21, strip1.Color(0, 0, 50, 0));
+        strip1.show();
+
+        strip2.setPixelColor(3, strip1.Color(0, 0, 0, 5));
+        strip2.setPixelColor(5, strip1.Color(0, 0, 0, 5));
+        strip2.setPixelColor(6, strip1.Color(0, 0, 0, 5));
+        strip2.show();
+
+        strip3.setPixelColor(3, strip1.Color(0, 0, 0, 5));
+        strip3.setPixelColor(5, strip1.Color(0, 0, 0, 5));
+        strip3.setPixelColor(6, strip1.Color(0, 0, 0, 5));
+        strip3.show();
+      }
+      break;
+
+    default:
+      //eteindre toutes les leds
+      if (update == 1) {
+        update = 0;
         all_black();
-        break;
-    }
+      }
+      break;
   }
 }
+
 
 void processInput(String input) {
   input.trim();  // Supprimer les espaces inutiles
@@ -280,12 +367,12 @@ void processInput(String input) {
     if (red == 0 and green == 0 and blue == 0) {
       //power off led uv
       Serial.println("PWER OFF LED UV");
-      digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER OFF LED UV
+      digitalWrite(LED_PIN_PWR_UV, LOW);  // POWER OFF LED UV
 
     } else {
       //power on led uv
       Serial.println("PWER LED UV");
-      digitalWrite(LED_PIN_PWR_UV, LOW);  // POWER ON LED UV
+      digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER ON LED UV
     }
   }
   delay(10);
@@ -324,5 +411,33 @@ void all_black(void) {
   delay(10);
 
   //power off led uv
-  digitalWrite(LED_PIN_PWR_UV, HIGH);  // POWER OFF LED UV
+  digitalWrite(LED_PIN_PWR_UV, LOW);  // POWER OFF LED UV
 }
+
+
+
+
+void all_black_init_led(void) {
+
+  //effacer les bands
+  for (i = 0; i < MAX_LEDS; i++) {
+    strip1.setPixelColor(i, strip1.Color(0, 0, 0, 0));
+  }
+
+  for (i = 0; i < MAX_LEDS; i++) {
+    strip2.setPixelColor(i, strip1.Color(0, 0, 0, 0));
+  }
+
+  for (i = 0; i < MAX_LEDS; i++) {
+    strip3.setPixelColor(i, strip1.Color(0, 0, 0, 0));
+  }
+
+  for (i = 0; i < MAX_LEDS; i++) {
+    strip4.setPixelColor(i, strip1.Color(0, 0, 0));
+  }
+
+  //power off led uv
+  digitalWrite(LED_PIN_PWR_UV, LOW);  // POWER OFF LED UV
+}
+
+
