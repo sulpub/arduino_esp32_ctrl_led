@@ -35,10 +35,8 @@ print(f"Numéro de série détecté : {device_number}")
 
 # Liste manuelle des commandes
 params_list = [
-    #all off
-    (device_number, baudrate, led_number, 2025, 0, 0, 0, 0, 0),  
+    (device_number, baudrate, led_number, 2025, 0, 0, 0, 0, 0),  #all off
     
-    #led du haut
     (device_number, baudrate, led_number, 0, 4, 0, 0, 0, 50),
     (device_number, baudrate, led_number, 0, 5, 0, 0, 0, 50),
     (device_number, baudrate, led_number, 0, 6, 0, 0, 0, 50),

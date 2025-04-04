@@ -24,8 +24,12 @@ numéro bande : 0 - led du haut
                3 - led UV
 
 exemple : 
- - 200,0,6,10,0,0,0 -> bande 0 , led 6 avec niveau rouge = 10 
+ - 200,0,6,100,0,0,0 -> bande 0 , led 6 avec niveau rouge = 10 
  - 200,0,16,0,0,0,50 -> bande 0 , led 16 avec niveau blanc = 50
+ - 200,1,3,0,0,0,50  -> bande 1 , led 3 avec niveau blanc = 50
+ - 200,2,3,0,0,0,50  -> bande 2 , led 3 avec niveau blanc = 50
+ - 200,3,0,1,1,1,1   -> bande 3 UV ON, bande led on (non selectionnable)
+ - 200,3,0,0,0,0,0   -> bande 3 UV OFF, bande led on (non selectionnable)
 
 Commande spécial numéro bande = 2025 -> efface toute les leds
 exemple : 200,2025,0,0,0,0,0
@@ -35,7 +39,7 @@ Note : la bande 3 est RGB, la valeur blanche n'est pas pris en compte
 Commande UART 2 : mode eclairage
 2025,mode :
 mode de 1 à 10
-mode 0 erase all
+mode 100 erase all
 
 */
 

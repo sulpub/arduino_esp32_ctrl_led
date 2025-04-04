@@ -46,7 +46,22 @@ params_list = [
     (device_number, baudrate, led_number, 0, 15, 0, 0, 0, 50),
     (device_number, baudrate, led_number, 0, 16, 0, 0, 0, 50),
     (device_number, baudrate, led_number, 0, 18, 0, 0, 0, 50),
-    (device_number, baudrate, led_number, 0, 21, 0, 0, 50, 0)
+    (device_number, baudrate, led_number, 0, 21, 0, 0, 50, 0),
+    
+    #led du bas
+    (device_number, baudrate, led_number, 1, 3, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 1, 4, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 1, 5, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 1, 6, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 1, 7, 0, 0, 1, 0),
+
+    (device_number, baudrate, led_number, 2, 3, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 2, 4, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 2, 5, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 2, 6, 0, 0, 1, 0),
+    (device_number, baudrate, led_number, 2, 7, 0, 0, 1, 0)
+    
+  
 ]
 
 # Envoi et lecture UART
